@@ -1,6 +1,9 @@
 package gdp2.pv.view;
 
 import gdp2.pv.model.GeschlechtException;
+
+import java.awt.EventQueue;
+
 import gdp2.pv.model.GeschlechtType;
 import gdp2.pv.model.Profil;
 import gdp2.pv.model.SexualitaetException;
@@ -10,6 +13,7 @@ import gdp2.pv.service.Partnervermittlung;
 import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Scanner;
 import java.util.UUID;
@@ -211,12 +215,14 @@ public class PartnervermittlungUI {
 							break;
 							
 					case 5: //Profile speichern
+							System.out.println("executed1");
 							ok = pv.profileSpeichern();
 							if (ok) {
 								System.out.println("Speicherung erfolgreich.");
 							} else {
 								System.out.println("Fehler beim Speichern.");
 							}
+							System.out.println("executed2");
 							break;
 							
 					case 6: //Profile laden
@@ -246,12 +252,31 @@ public class PartnervermittlungUI {
 	/** main-Routine zur Menueanzeige fuer die Partnervermittlung.
 	  * @param args Kommandozeilenparameter, derzeit nicht verwendet
 	 * @throws IOException 
+	 * @throws Exception 
+	 * @throws InvocationTargetException 
 	 */ 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, InvocationTargetException, Exception {
 		//Service-Objekt erzeugen
-		Partnervermittlung pv = new Partnervermittlung();
 		
-		//Menue zur User-Interaktion mit der Partnervermittlung anzeigen
-		zeigeMenue(pv);
+		
+		EventQueue.invokeAndWait(new Runnable() {
+            @Override
+            public void run() {                
+            	Partnervermittlung pv = new Partnervermittlung();
+            	
+            	//Menue zur User-Interaktion mit der Partnervermittlung anzeigen
+            	try {
+					zeigeMenue(pv);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+            }
+        });
+
+		
+		
+		
+		
 	}
 }

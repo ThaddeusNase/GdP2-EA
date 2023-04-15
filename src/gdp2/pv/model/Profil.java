@@ -1,9 +1,14 @@
 package gdp2.pv.model;
 
+import java.io.Serializable;
 import java.util.UUID;
 
-public class Profil {
+public class Profil implements Serializable{
 
+	/**
+	 * 
+	 */
+	// private static final long serialVersionUID = 1L;
 	// Altersgruppe, Geschlecht, Interessen, Wohnort/Region, Foto
 	private UUID uuid;
 	private String name;

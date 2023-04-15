@@ -1,8 +1,14 @@
 package gdp2.pv.service;
 
 import gdp2.pv.model.Profil;
+import javax.swing.JFileChooser;
+import java.io.ObjectOutputStream;
+import java.io.FileOutputStream;
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
 
 import java.io.Closeable;
+import java.io.Console;
 import java.io.IOException;
 import java.util.UUID;
 import java.io.File;
@@ -87,7 +93,42 @@ public class Partnervermittlung {
 	 * @return true, falls Speicherung erfolgreich, false sonst
 	 */
 	public boolean profileSpeichern() {
-		return false;	//## dummy ##
+		// Erstelle File-Dialog
+		System.out.println("executed3");
+	    JFileChooser fileChooser = new JFileChooser();
+	    fileChooser.setDialogTitle("Speichern unter");
+	    
+	    // Setze den Start-Ordner auf den aktuellen Ordner
+	    File currentDir = new File(".");
+	    fileChooser.setCurrentDirectory(currentDir.getAbsoluteFile());
+	    
+	    // Zeige den Dialog an und warte auf die Benutzeraktion
+	    int result = fileChooser.showSaveDialog(null);
+	    System.out.println("executed4");
+	    if (result == JFileChooser.APPROVE_OPTION) { // Wenn der Benutzer auf "Speichern" klickt
+	        try {
+	            File selectedFile = fileChooser.getSelectedFile();
+	            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(selectedFile));
+	            try {
+					for (int i = 0; i < profile.length; i++) {
+						out.writeObject(profile[i]);
+					}
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+	            out.close();
+	            System.out.println("Profile abgelegt unter:" + selectedFile);
+	            return true;
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	            System.out.println("executed ERROR oof");
+	            return false;
+	            
+	        }
+	    } else { // Wenn der Benutzer auf "Abbrechen" klickt oder das Fenster schließt
+	        return false;
+	    }
 	}
 	
 	
@@ -95,7 +136,34 @@ public class Partnervermittlung {
 	 * @return true, falls Laden erfolgreich, false sonst
 	 */
 	public boolean profileLaden() {
-		return false;	//## dummy ##
+		alleProfileLoeschen();
+		
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setCurrentDirectory(new File("."));
+        int result = fileChooser.showOpenDialog(null);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            try {
+                FileInputStream fileIn = new FileInputStream(selectedFile);
+                ObjectInputStream objectIn = new ObjectInputStream(fileIn);
+                int i = 0;
+                while (true) {
+                	if (i >= this.profile.length) break;
+                	Profil profil = (Profil) objectIn.readObject();
+                	this.profile[i] = profil;
+                	if (profil != null) System.out.println(i+") Profil name: " + profil.getName());
+                	i++;
+                }
+                objectIn.close();
+                
+                return true;
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                return false;
+            }
+        } else {
+            return false;
+        }
 	}
 	
 
