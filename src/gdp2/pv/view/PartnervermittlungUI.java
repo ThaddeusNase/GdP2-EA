@@ -1,11 +1,16 @@
 package gdp2.pv.view;
 
+import gdp2.pv.model.GeschlechtException;
+import gdp2.pv.model.GeschlechtType;
 import gdp2.pv.model.Profil;
+import gdp2.pv.model.SexualitaetException;
+import gdp2.pv.model.SexualitaetType;
 import gdp2.pv.service.Partnervermittlung;
 
 import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.Scanner;
 import java.util.UUID;
 
@@ -17,43 +22,102 @@ public class PartnervermittlungUI {
 	/** Liest Profildaten von der Standardeingabe ein, speichert diese in einem 
 	 * Profil-Objekt und gibt das Objekt zurueck.
 	 * @return Das erfolgreich erfasste Profil, null im Fehlerfall.
+	 * @throws IOException 
 	 */ 
-	public static Profil profilErfassen() {
+	public static Profil profilErfassen() throws IOException {
 		
 		try {
 			//Profildaten von der Konsole einlesen
 			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-			System.out.println("...: ");
-			//int ... = Integer.parseInt(br.readLine());
+			// name input
+			System.out.println("tippe name ein & drücke danach enter: ");
+			String name = br.readLine();
 
-			System.out.println("...: ");
-			//String ... = br.readLine();
+			// alter input
+			System.out.println("tippe age ein & drücke danach enter: ");
+			int alter = Integer.parseInt(br.readLine());
 			
-			// ## to do ##
-
+			// geschlecht input
+			System.out.println("tippe geschlecht ein & drücke danach enter: " + Arrays.toString(GeschlechtType.values()));
+			GeschlechtType geschlecht = GeschlechtType.findByValue(br.readLine());
+			
+			// sexualitaet input
+			System.out.println("tippe geschlecht ein & drücke danach enter: " + Arrays.toString(SexualitaetType.values()));
+			SexualitaetType sexualitaet = SexualitaetType.findByValue(br.readLine());
+			
+			// interessen input;
+			System.out.println("tippe interessen ein & drücke danach enter: ");
+			String interessen = br.readLine();
+			
+			// beruf
+			System.out.println("tippe beruf ein & drücke danach enter: ");
+			String beruf = br.readLine();
+			
+			// beruf
+			System.out.println("tippe wohnort ein & drücke danach enter: ");
+			String wohnort = br.readLine();
+			
+			// profilebild url
+			String defaultProfilBildUrl = "https://us.123rf.com/450wm/photoplotnikov/photoplotnikov1703/photoplotnikov170300032/74051448-standard-m%C3%A4nnlich-avatar-profilbild-symbol-grauer-mann-foto-platzhalter-vektor-illustration.jpg";
+			
+			System.out.println(
+					"\n" +
+					"------ ZUSAMMENFASSUNG ------" + "\n" +
+					"userName: "+ name + "\n" + 
+					"alter: "+ alter + "\n" +
+					"geschlecht: " + geschlecht.getDisplayName() +"\n" + 
+					"sexualität: "+ sexualitaet.getDisplayName() + "\n" +
+					"interessen: " + interessen + "\n" +
+					"beruf: " + beruf + "\n" +
+					"wohnort: " + wohnort + "\n" +
+					"profilbild url: " + defaultProfilBildUrl
+			);
+			
 			UUID uuid = UUID.randomUUID();		//ID fuer das Profil erzeugen
-			//return new Profil(...);			// ## to do ##
-			return null;						// ## dummy ##
+			
+			Profil neuesProfil = new Profil(
+				uuid,
+				name,
+				alter,
+				geschlecht,
+				sexualitaet,
+				interessen,
+				beruf,
+				wohnort,
+				defaultProfilBildUrl
+			);
+			
+			return neuesProfil;						
 		}
-/* ## to do ##
+
 		catch (IOException e) {
 			System.err.println("Fehler bei der Dateneingabe: " + e.getMessage());
 			return null;
 		}
-*/
+
 		catch (NumberFormatException e) {
 			System.err.println("Fehler bei der Zahleneingabe: " + e.getMessage());
 			return null;
 		}
+		catch (GeschlechtException e) {
+			System.out.println(e.getMessage());
+			return null;
+		}
+		catch (SexualitaetException e) {
+			System.out.println(e.getMessage());
+			return null;
+		}
+		
 	}
 
 	
 	/** Zeigt das Hauptmenue und Untermenues an, gibt Eingaben an die Service-Klasse Partnervermittlung
 	 * weiter, nimmt deren Ausgaben entgegen und zeigt sie an.
 	 * @param pv Partnervermittlung-Objekt, mit dem kommuniziert wird.
+	 * @throws IOException 
 	 */
-	public static void zeigeMenue(Partnervermittlung pv) {
+	public static void zeigeMenue(Partnervermittlung pv) throws IOException {
 		boolean ok;				//Rueckgabewert von Lese-/Schreiboperationen
 		boolean ende = false;	//Abbruchbedingung fuer die Menueschleife
 		int ziffer;				//fuer Menueauswahl
@@ -181,8 +245,9 @@ public class PartnervermittlungUI {
 
 	/** main-Routine zur Menueanzeige fuer die Partnervermittlung.
 	  * @param args Kommandozeilenparameter, derzeit nicht verwendet
+	 * @throws IOException 
 	 */ 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		//Service-Objekt erzeugen
 		Partnervermittlung pv = new Partnervermittlung();
 		
